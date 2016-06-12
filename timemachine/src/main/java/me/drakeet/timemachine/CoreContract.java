@@ -26,7 +26,6 @@ public interface CoreContract {
 
 
     interface Service {
-        // pass
         void start();
         void destroy();
         void onNewOut(Message message);

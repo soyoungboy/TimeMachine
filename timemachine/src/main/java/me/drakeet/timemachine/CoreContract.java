@@ -25,9 +25,7 @@ public interface CoreContract {
     }
 
 
-    interface Service {
-        void start();
-        void destroy();
+    interface Service extends LifeCycle {
         void onNewOut(Message message);
     }
 }

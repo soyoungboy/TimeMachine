@@ -138,6 +138,7 @@ public class CoreFragment extends Fragment
 
     @Override public void onNewOut(Message message) {
         addMessage(message);
+        delegate.onNewOut(message);
     }
 
 
@@ -155,7 +156,6 @@ public class CoreFragment extends Fragment
             if (!delegate.onRightActionClick()) {
                 input.setText("");
                 dispatcher.addNewOut(message);
-                delegate.onNewOut(message);
                 offsetIfInBottom();
             }
             delegate.onRightActionClick();

@@ -3,7 +3,7 @@ package me.drakeet.timemachine;
 /**
  * @author drakeet
  */
-public class MessageDispatcher implements Dispatcher {
+public class MessageDispatcher implements Dispatcher, LifeCycle {
 
     private CoreContract.View view;
     private CoreContract.Service service;
@@ -23,5 +23,15 @@ public class MessageDispatcher implements Dispatcher {
     @Override public void addNewOut(Message message) {
         this.view.onNewOut(message);
         this.service.onNewOut(message);
+    }
+
+
+    @Override public void start() {
+        service.start();
+    }
+
+
+    @Override public void destroy() {
+        service.destroy();
     }
 }

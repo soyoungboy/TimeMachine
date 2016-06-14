@@ -9,7 +9,7 @@ SDK:
 Service sample:
 `/transformer`
 
-<img src="/transformer/screenshot.png" width=256 height=449/>
+<img src="transformer/screenshot.png" width=256 height=449/>
 
 #### Goals
 - One-way APIs.

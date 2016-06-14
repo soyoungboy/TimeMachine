@@ -3,7 +3,7 @@ package me.drakeet.timemachine;
 /**
  * @author drakeet
  */
-public abstract class BaseService implements CoreContract.Service {
+public abstract class BaseService implements CoreContract.Service, Dispatcher {
 
     private CoreContract.View view;
 
@@ -14,7 +14,14 @@ public abstract class BaseService implements CoreContract.Service {
     }
 
 
-    protected void addNewIn(Message message) {
+    @Override
+    public void addNewIn(Message message) {
         view.onNewIn(message);
+    }
+
+
+    @Override public void addNewOut(Message message) {
+        view.onNewOut(message);
+        this.onNewOut(message);
     }
 }

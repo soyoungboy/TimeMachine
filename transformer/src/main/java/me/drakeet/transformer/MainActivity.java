@@ -1,5 +1,6 @@
 package me.drakeet.transformer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
@@ -11,6 +12,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.google.android.agera.Observable;
+import com.google.android.agera.Updatable;
+import com.google.android.agera.content.ContentObservables;
 import java.util.ArrayList;
 import java.util.List;
 import me.drakeet.timemachine.CoreContract;
@@ -20,7 +24,7 @@ import me.drakeet.timemachine.MessageDispatcher;
 import me.drakeet.timemachine.TimeKey;
 
 public class MainActivity extends AppCompatActivity
-    implements NavigationView.OnNavigationItemSelectedListener, CoreContract.Delegate {
+    implements NavigationView.OnNavigationItemSelectedListener, CoreContract.Delegate, Updatable {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -48,7 +52,8 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         CoreFragment fragment = CoreFragment.newInstance();
         fragment.setDelegate(this);
-        dispatcher = new MessageDispatcher(fragment, new ServiceImpl(fragment));
+        dispatcher = new MessageDispatcher(fragment, new MessageHandler(fragment));
+        dispatcher.start();
         transaction.add(R.id.core_container, fragment).commitAllowingStateLoss();
     }
 
@@ -72,10 +77,13 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_yin) {
             Message message = new Message.Builder().setContent("求王垠的最新文章")
                 .setFromUserId(TimeKey.userId)
-                .setToUserId(ServiceImpl.SELF)
+                .setToUserId(MessageHandler.SELF)
                 .thenCreateAtNow();
             dispatcher.addNewOut(message);
         }
+        Observable observable = ContentObservables.broadcastObservable(this,
+            Intent.ACTION_USER_PRESENT);
+        observable.addUpdatable(this);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -133,5 +141,20 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override public void update() {
+        Message message = new Message.Builder().setContent("求王垠的最新文章")
+            .setFromUserId(TimeKey.userId)
+            .setToUserId(MessageHandler.SELF)
+            .thenCreateAtNow();
+        dispatcher.addNewOut(message);
+    }
+
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        dispatcher.destroy();
     }
 }
